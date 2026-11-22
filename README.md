@@ -1,69 +1,60 @@
-# 大模型知识库
+# DeepSeek Harness 伴学导图
 
-![License: CC BY 4.0](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey)
+伴学导图是 DeepSeek Harness 的学习插件。你可以把知识点整理成导图，为每个节点写按节编号的笔记，选中原句发起追问，再把值得保留的回答收进笔记。复习卡按到期日排列，学习数据保存在本地，并同步导出 Markdown。
 
-把大模型的架构、后训练、推理系统、Agent 与 RSI 组织成「节点 + 母题卡」的笔记库。
-每个节点是一篇能独立读的笔记；母题卡是配套的练习题，按「题眼 → 破题步骤 → 典型题 → 变式」展开。
-内容持续更新，欢迎开 issue 指出错误或补充论文。
+**当前版本 `0.3.3`** · [下载安装包](./dsh-llm-mindmap-0.3.3.tgz?raw=true) · [直接阅读大模型知识库](./nodes/llm-root.md)
 
-## 思维导图
+## 在 macOS 上安装到 Harness
 
-```mermaid
-mindmap
-  llm_root["大模型核心知识体系 (LLM Core)"]
-    cat_arch["架构与注意力机制"]
-      node_gqa["MHA → MQA → GQA 注意力演进"]
-      node_rope["RoPE 旋转位置编码与外推"]
-      node_norm["RMSNorm (Pre-Norm) & SwiGLU"]
-    cat_post["后训练与强化对齐"]
-      node_sft["SFT 微调与 LoRA / QLoRA"]
-      node_grpo["PPO → DPO → GRPO 对齐演进"]
-    cat_sys["推理系统与显存优化"]
-      node_vllm["KV Cache & vLLM PagedAttention"]
-    cat_agent["Agent 架构与 Harness 工程"]
-      node_rsi["RSI 递归自我改进"]
-        node_rsi_notes["RSI 闭环原理与护栏"]
-        node_rsi_papers["RSI 论文与阅读顺序"]
-      node_harness["长周期 Agent KV 命中与隔离"]
+需要 Node.js 22 或更高版本，以及 DeepSeek Harness 命令行工具 `dsh`。把安装包下载到 `Downloads` 后，在终端执行下面两条命令。
+
+```sh
+dsh plugin --profile web add "$HOME/Downloads/dsh-llm-mindmap-0.3.3.tgz"
+dsh --profile web --no-open
 ```
 
-## 索引
+也可以在 Harness 的「插件 → 添加插件」里粘贴安装包的绝对路径。安装完成后启用插件，按界面提示重启当前 profile。
 
-- [大模型核心知识体系 (LLM Core)](nodes/llm-root.md) — 架构注意力、后训练对齐、推理系统与 Agent Harness 全局骨架
-  - [架构与注意力机制](nodes/cat-arch.md) — KV 压缩、相对位置外推与归一化激活稳定性
-    - [MHA → MQA → GQA 注意力演进](nodes/node-gqa.md) — 共享 KV 头压缩显存带宽，平衡生成速度与表征能力 ｜ [PyTorch 手撕带 KV Broadcast 的 GQA](problems/prob-gqa-code.md) · [MHA/GQA/MLA 的 KV 显存压缩率与算术强度推导](problems/prob-kv-comp.md)
-    - [RoPE 旋转位置编码与外推](nodes/node-rope.md) — 复平面绝对旋转等价于相对内积，支持 NTK/YaRN 扩窗 ｜ [RoPE 复数旋转推导与 NTK/YaRN 长窗外推](problems/prob-rope-math.md)
-    - [RMSNorm (Pre-Norm) & SwiGLU](nodes/node-norm.md) — 去均值稳住残差梯度流，门控 FFN 以 8/3 d² 控参提效 ｜ [Pre-RMSNorm 梯度流与 SwiGLU 8/3 d² 参数计算](problems/prob-norm-swiglu.md)
-  - [后训练与强化对齐](nodes/cat-post.md) — 从指令微调 SFT/LoRA 到 PPO、DPO、GRPO 的对齐范式演进
-    - [SFT 微调与 LoRA / QLoRA](nodes/node-sft.md) — 低秩旁路降显存，警惕数据配比与 EOS 缺失引发复读 ｜ [SFT 复读机死循环、灾难性遗忘与 LoRA 调优排障](problems/prob-sft-lora.md)
-    - [PPO → DPO → GRPO 对齐演进](nodes/node-grpo.md) — 砍掉 Critic 模型，以组内相对优势 A_i 驱动可验证推理对齐 ｜ [PPO vs DPO vs DeepSeek GRPO 损失函数与架构取舍](problems/prob-rl-grpo.md)
-  - [推理系统与显存优化](nodes/cat-sys.md) — Prefill 计算受限与 Decode 访存受限下的 KV 管理与吞吐优化
-    - [KV Cache & vLLM PagedAttention](nodes/node-vllm.md) — 页表映射非连续 KV Block 消除显存碎片，撑起高并发批处理 ｜ [大模型推理显存盘点与 KV Cache 容量/吞吐估算](problems/prob-kv-roofline.md) · [Prefix Caching (RadixAttention) 命中条件与缓存边界设计](problems/prob-prefix-caching.md)
-  - [Agent 架构与 Harness 工程](nodes/cat-agent.md) — 模型之外的编排外壳：通用循环 + 记忆设计 + Harness + RSI 演进
-    - [RSI 递归自我改进](nodes/node-rsi.md) — 让系统改进「产生产出的那套东西」，并让改进持续累积
-      - [RSI 闭环原理与护栏](nodes/node-rsi-notes.md) — 改哪一层、谁来判、怎么防刷分：一个能落地的自改进闭环 ｜ [设计一个自改进 Coding Agent，并防止它刷分](problems/prob-rsi-guard.md) · [STaR 为什么相当于只在答对样本上做策略梯度](problems/prob-rsi-star.md)
-      - [RSI 论文与阅读顺序](nodes/node-rsi-papers.md) — 从 Gödel Machine 到 DGM，按改写对象排好的阅读清单
-    - [长周期 Agent KV 命中与隔离](nodes/node-harness.md) — 只追加历史保前缀缓存，Subagent 隔离探索噪声防腐烂 ｜ [长周期 Agent 的 KV Cache 命中率保护与 Subagent 隔离](problems/prob-harness-cache.md)
+打开 Harness 后，从会话顶栏的导图图标或右侧栏「+ → 伴学导图」进入。全新工作区会载入「大模型知识库」和「算法面试刷题库」两个示例。
 
-## 仓库结构
+## 在会话里学习
 
-```text
-llm-notes-v1/
-├── README.md      # 本页：导图 + 全库索引
-├── nodes/         # 节点笔记（每篇独立可读）
-└── problems/      # 母题卡（题眼 / 破题步骤 / 典型题 / 变式）
+1. **读笔记**。点击导图节点，查看核心框架和后续小节。用小节引用串联内容，移动小节后显示编号会随之更新。
+2. **对原句追问**。选中一句话，点击「追问这句」，输入第一个问题。Harness 会打开一个以该句及所在小节为上下文的独立会话。可以用「回到原会话」继续原来的讨论。
+3. **把回答收进导图**。点击回答下方的「存到导图」，编辑草稿或提交待审。Agent 提出的导图改动可以在「待审」里调整后再收录。
+4. **做复习卡**。从「复习」打开到期卡片，先回忆再看答案。给自己打 `1`、`2` 或 `3` 分，系统会据此安排下次复习。
+
+## 独立预览
+
+只想试用导图、笔记和复习卡时，可以解压安装包，用 Node.js 启动本地预览。模型追问在 Harness 中使用。
+
+```sh
+mkdir -p "$HOME/Downloads/dsh-llm-mindmap"
+tar -xzf "$HOME/Downloads/dsh-llm-mindmap-0.3.3.tgz" -C "$HOME/Downloads/dsh-llm-mindmap"
+cd "$HOME/Downloads/dsh-llm-mindmap/package"
+npm install
+npm start
 ```
 
-## 怎么读
+打开 [本地预览](http://127.0.0.1:3090/llm-mindmap)。想运行包内自动化测试，在同一目录执行 `npm test`。
 
-1. 先看上面的思维导图，找到你关心的一支。
-2. 从该支的根节点往下读，每篇开头都有「上级」链接可以回退。
-3. 读完一篇，顺手过一遍对应的母题卡，检验是否真的会用了。
+Harness 集成目前以 macOS 的试用为准。Windows 上已通过包内 10 项自动化测试，并验证了独立预览的页面和示例数据接口。
 
-## 关于公式
+## 大模型知识库
 
-笔记里的公式用 LaTeX 写，GitHub 原生渲染 `$...$` 与 `$$...$$`；如果在本地用 Obsidian / Typora 打开，语法同样通用。
+仓库里有 15 篇节点笔记和 11 张题卡，可以直接在 GitHub 阅读。从[总览](./nodes/llm-root.md)进入，或按主题选择。
+
+| 主题 | 节点笔记 | 配套题卡 |
+| --- | --- | --- |
+| [模型架构](./nodes/cat-arch.md) | [GQA](./nodes/node-gqa.md)、[RoPE](./nodes/node-rope.md)、[RMSNorm 与 SwiGLU](./nodes/node-norm.md) | [实现 GQA](./problems/prob-gqa-code.md)、[推导 KV 开销](./problems/prob-kv-comp.md)、[推导 RoPE](./problems/prob-rope-math.md)、[计算 SwiGLU 参数量](./problems/prob-norm-swiglu.md) |
+| [后训练](./nodes/cat-post.md) | [SFT 与 LoRA](./nodes/node-sft.md)、[PPO、DPO 与 GRPO](./nodes/node-grpo.md) | [SFT 与 LoRA 排查](./problems/prob-sft-lora.md)、[比较对齐算法](./problems/prob-rl-grpo.md) |
+| [推理系统](./nodes/cat-sys.md) | [KV Cache 与 vLLM](./nodes/node-vllm.md) | [估算显存与吞吐](./problems/prob-kv-roofline.md)、[判断前缀缓存命中](./problems/prob-prefix-caching.md) |
+| [Agent 与 Harness](./nodes/cat-agent.md) | [递归自我改进](./nodes/node-rsi.md)、[闭环与护栏](./nodes/node-rsi-notes.md)、[论文导读](./nodes/node-rsi-papers.md)、[长会话缓存与隔离](./nodes/node-harness.md) | [长会话缓存设计](./problems/prob-harness-cache.md)、[设计自我改进评估](./problems/prob-rsi-guard.md)、[推导 STaR](./problems/prob-rsi-star.md) |
+
+## 本地数据
+
+插件把数据写到工作区的 `.llm-mindmap/`。`vaults.json` 是知识库列表，`vaults/<id>/mindmap.v2.json` 保存该知识库的导图、笔记和复习状态。每个知识库的 `markdown/` 目录会同步生成 `INDEX.md`、`nodes/` 和 `problems/`，可以在 Obsidian 中打开。
 
 ## 许可
 
-本仓库文字内容采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 许可，引用或转载注明出处即可。代码片段（如有）按各自上下文使用。
+仓库的知识库文字采用 [CC BY 4.0](./LICENSE)。插件安装包在包内 `package.json` 声明 MIT，随包分发的第三方组件附有各自的许可。
