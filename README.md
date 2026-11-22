@@ -48,7 +48,7 @@ mindmap
 ## 仓库结构
 
 ```text
-llm-notes/
+llm-notes-v1/
 ├── README.md      # 本页：导图 + 全库索引
 ├── nodes/         # 节点笔记（每篇独立可读）
 └── problems/      # 母题卡（题眼 / 破题步骤 / 典型题 / 变式）
