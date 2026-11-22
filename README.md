@@ -2,7 +2,7 @@
 
 伴学导图是面向 DeepSeek Harness 的社区学习插件。你可以把知识点整理成导图，为每个节点写按节编号的笔记，选中原句发起追问，再把值得保留的回答收进笔记。复习卡按到期日排列，学习数据保存在本地，并同步导出 Markdown。
 
-**当前版本 `0.1.0`** · [下载安装包](./dsh-llm-mindmap-0.1.0.tgz?raw=true) · [直接阅读大模型知识库](./nodes/llm-root.md)
+**当前版本 `0.1.0`** · [macOS 安装包](./dsh-llm-mindmap-0.1.0.tgz?raw=true) · [Windows 安装包](./dsh-llm-mindmap-0.1.0-win.1.tgz?raw=true) · [GitHub Releases](https://github.com/PastLantern/dsh-llm-mindmap/releases/tag/v0.1.0) · [大模型知识库](./nodes/llm-root.md)
 
 ## 在 macOS 上安装到 Harness
 
@@ -14,6 +14,20 @@ dsh --profile web --no-open
 ```
 
 也可以在 Harness 的「插件 → 添加插件」里粘贴安装包的绝对路径。安装完成后启用插件，按界面提示重启当前 profile。
+
+## 在 Windows 上安装到 Harness
+
+确认 DeepSeek Harness 的 Web profile 可以启动。将 Windows 安装包下载到 `Downloads` 后，在 PowerShell 执行。
+
+```powershell
+$bundle = Join-Path $HOME 'Downloads/dsh-llm-mindmap-0.1.0-win.1.tgz'
+dsh.cmd plugin --profile web add ($bundle -replace '\\', '/')
+dsh.cmd --profile web --no-open
+```
+
+如果安装的命令是 `dsh.exe`，将上面的 `dsh.cmd` 换成 `dsh.exe`。也可以在 Harness 的「插件 → 添加插件」里粘贴 Windows 安装包的绝对路径。
+
+## 打开伴学导图
 
 打开 Harness 后，从会话顶栏的导图图标或右侧栏「+ → 伴学导图」进入。全新工作区会载入「大模型知识库」和「算法面试刷题库」两个示例。
 
@@ -28,6 +42,8 @@ dsh --profile web --no-open
 
 只想试用导图、笔记和复习卡时，可以解压安装包，用 Node.js 启动本地预览。模型追问在 Harness 中使用。
 
+### macOS
+
 ```sh
 mkdir -p "$HOME/Downloads/dsh-llm-mindmap"
 tar -xzf "$HOME/Downloads/dsh-llm-mindmap-0.1.0.tgz" -C "$HOME/Downloads/dsh-llm-mindmap"
@@ -36,9 +52,21 @@ npm install
 npm start
 ```
 
-打开 [本地预览](http://127.0.0.1:3090/llm-mindmap)。想运行包内自动化测试，在同一目录执行 `npm test`。
+### Windows
 
-Harness 集成目前以 macOS 的试用为准。Windows 上已通过包内 10 项自动化测试，并验证了独立预览的页面和示例数据接口。
+```powershell
+$bundle = Join-Path $HOME 'Downloads/dsh-llm-mindmap-0.1.0-win.1.tgz'
+$preview = New-Item -ItemType Directory -Path '.\mindmap-preview' -ErrorAction Stop
+tar.exe -xzf $bundle -C $preview.FullName
+if ($LASTEXITCODE -ne 0) { throw '插件包解压失败' }
+Set-Location -LiteralPath (Join-Path $preview.FullName 'package')
+npm.cmd install --omit=dev
+npm.cmd start
+```
+
+打开 [本地预览](http://127.0.0.1:3090/llm-mindmap)。想运行包内自动化测试，在同一目录执行 `npm test`，Windows 上可以执行 `npm.cmd test`。
+
+Windows 版已验证全新安装、独立预览、`Ctrl+K` 搜索、`Ctrl+Enter` 保存和 Markdown 导出。在 Harness Web 中还验证了侧栏、划词独立追问和返回主会话。追问测试使用本地模型替身。
 
 ## 大模型知识库
 
