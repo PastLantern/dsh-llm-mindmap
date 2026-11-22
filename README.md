@@ -1,15 +1,15 @@
 # DeepSeek Harness 伴学导图
 
-伴学导图是 DeepSeek Harness 的学习插件。你可以把知识点整理成导图，为每个节点写按节编号的笔记，选中原句发起追问，再把值得保留的回答收进笔记。复习卡按到期日排列，学习数据保存在本地，并同步导出 Markdown。
+伴学导图是面向 DeepSeek Harness 的社区学习插件。你可以把知识点整理成导图，为每个节点写按节编号的笔记，选中原句发起追问，再把值得保留的回答收进笔记。复习卡按到期日排列，学习数据保存在本地，并同步导出 Markdown。
 
-**当前版本 `0.1.0`** · [下载安装包](./llm-notes-v1-0.1.0.tgz?raw=true) · [直接阅读大模型知识库](./nodes/llm-root.md)
+**当前版本 `0.1.0`** · [下载安装包](./dsh-llm-mindmap-0.1.0.tgz?raw=true) · [直接阅读大模型知识库](./nodes/llm-root.md)
 
 ## 在 macOS 上安装到 Harness
 
 需要 Node.js 22 或更高版本，以及 DeepSeek Harness 命令行工具 `dsh`。把安装包下载到 `Downloads` 后，在终端执行下面两条命令。
 
 ```sh
-dsh plugin --profile web add "$HOME/Downloads/llm-notes-v1-0.1.0.tgz"
+dsh plugin --profile web add "$HOME/Downloads/dsh-llm-mindmap-0.1.0.tgz"
 dsh --profile web --no-open
 ```
 
@@ -30,7 +30,7 @@ dsh --profile web --no-open
 
 ```sh
 mkdir -p "$HOME/Downloads/dsh-llm-mindmap"
-tar -xzf "$HOME/Downloads/llm-notes-v1-0.1.0.tgz" -C "$HOME/Downloads/dsh-llm-mindmap"
+tar -xzf "$HOME/Downloads/dsh-llm-mindmap-0.1.0.tgz" -C "$HOME/Downloads/dsh-llm-mindmap"
 cd "$HOME/Downloads/dsh-llm-mindmap/package"
 npm install
 npm start
